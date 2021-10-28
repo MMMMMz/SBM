@@ -1,4 +1,4 @@
-function [D,resIndex] =  iterMatrix(data, tau) 
+function [D,resIndex] =  iterMatrix(data) 
 % 输入数据生成状态矩阵D（每次迭代增加一数据点）
     [n, ~] = size(data); 
     sim_matrix = zeros(n,n); % 相似度矩阵 
@@ -20,26 +20,55 @@ function [D,resIndex] =  iterMatrix(data, tau)
     
 
  %最大最小值加入矩阵中
-    m = size(data,2); 
-    for i=1:m 
-        minnum(i) = find(data(:,i) == min(data(:,i))); 
-        maxnum(i) = find(data(:,i) == max(data(:,i))); 
-    end 
-    snum = unique([minnum,maxnum]); 
-    resIndex = unique([resIndex,snum]);
+%     m = size(data,2); 
+%     for i=1:m 
+%         minnum(i) = find(data(:,i) == min(data(:,i))); 
+%         maxnum(i) = find(data(:,i) == max(data(:,i))); 
+%     end 
+%     snum = unique([minnum,maxnum]); 
+%     resIndex = unique([resIndex,snum]);
+% %     resIndex = snum;
+%     index = length(resIndex);
+    
+    %加入第二列数据 六个最小的和两个最大的
+    sortRes = sortrows(data(:,2),'ascend');
+    for i = 1 : 7
+        specialIndex(i) =  find(data(:,2) == sortRes(i));
+    end
+    resIndex = unique([resIndex,specialIndex]);
+    clear specialIndex;
+    sortRes = sortrows(data(:,2),'descend');
+    for i = 1 : 3
+        specialIndex(i) =  find(data(:,2) == sortRes(i));
+    end
+    resIndex = unique([resIndex,specialIndex]);
+    %加入第十列数据一个最小的和两个最大的
+    clear specialIndex;
+    sortRes = sortrows(data(:,10),'descend');
+    for i = 1 : 3
+        specialIndex(i) =  find(data(:,10) == sortRes(i));
+    end
+    resIndex = unique([resIndex,specialIndex]);
+    clear specialIndex;
+    sortRes = sortrows(data(:,10),'ascend');
+    for i = 1 : 2
+        specialIndex(i) =  find(data(:,10) == sortRes(i));
+    end
+    resIndex = unique([resIndex,specialIndex]);
     index = length(resIndex);
-
+    
     for i = 1 : index
         D(i,:) = data(resIndex(i),:);
     end
     D = D(1:index,:);
+    
+    
     %进行矩阵填充
-    data_remain = data;
-    while index < 50  %最终D填充到多少个
+    while index < 30  %最终D填充到多少个
         [minIndex,rIndex] = minSim(data,D');
         if ~ismember(minIndex, resIndex)
-            index = index + 1;
-            resIndex(index) = minIndex;
+            resIndex = unique([resIndex,minIndex]); 
+            index = length(resIndex);
              for i = 1 : index
                  D(i,:) = data(resIndex(i),:);
             end
@@ -47,4 +76,8 @@ function [D,resIndex] =  iterMatrix(data, tau)
     end
     index = length(resIndex);
     D = D(1:index,:);
+    
+    %kmeans填充
+    [Idx,C] = kmeans(data,20);
+    D = cat(1,D,C);
 end

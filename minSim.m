@@ -16,7 +16,7 @@ function [result,resIndex] = minSim(data,D)
     end 
         
     for i = 1 : dataLen
-        if resMartix(i) > 0.001
+        if resMartix(i) > 0.005
             resIndex(index) = i;
             resIndex(index,2) = resMartix(i);
             index = index + 1;
