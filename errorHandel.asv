@@ -1,0 +1,5 @@
+function [errorParam,errorIndex] = errorHandel(errorMartix)
+   dataLen = length(errorMartix);
+   windowSize = 50;
+   for i = 1 : dataLen 
+end
