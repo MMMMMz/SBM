@@ -6,6 +6,7 @@ dataLen = length(sourceData);
 data=sourceData;
 % input = sourceData(dataLen - 2,:)';
 % D = sourceData(randperm(dataLen, 40),:)';
+% [D,ind,out] = iterMatrix(sourceData);
 [D,ind] = iterMatrix(sourceData);
 % [Idx,D] = kmeans(data,20);
 D = D';
